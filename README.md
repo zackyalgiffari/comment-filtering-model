@@ -70,3 +70,19 @@ PYTHONPATH=src python3 scripts/evaluate_predictions.py \
   --gold-jsonl data/bootstrap_sample.jsonl \
   --predictions-jsonl data/bootstrap_predictions_sample.jsonl
 ```
+
+## vLLM Smoke Test
+
+Dry-run the request payload without needing a running server:
+
+```bash
+PYTHONPATH=src python3 scripts/smoke_vllm.py --dry-run
+```
+
+When vLLM is running with the fine-tuned model:
+
+```bash
+PYTHONPATH=src python3 scripts/smoke_vllm.py \
+  --base-url http://localhost:8000/v1 \
+  --model your-org/qwen3.5-2b-comment-filtering
+```
