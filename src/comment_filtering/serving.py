@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from comment_filtering.dataset import SYSTEM_PROMPT
@@ -35,7 +36,13 @@ def build_messages(comment: str, language: str) -> list[dict[str, str]]:
     ]
 
 
+def strip_think_tags(text: str) -> str:
+    """Remove Qwen3 <think>...</think> blocks before JSON parsing."""
+    return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+
+
 def parse_decision_json(content: str) -> ModerationDecision:
+    content = strip_think_tags(content)
     try:
         value = json.loads(content)
     except json.JSONDecodeError as exc:

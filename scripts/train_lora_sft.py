@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fine-tune Qwen/Qwen3.5-2B for comment moderation with LoRA SFT."""
+"""Fine-tune Qwen/Qwen3-1.7B for comment moderation with LoRA SFT."""
 
 from __future__ import annotations
 
@@ -11,8 +11,8 @@ from typing import Any
 from comment_filtering.dataset import iter_jsonl
 
 
-DEFAULT_MODEL = "Qwen/Qwen3.5-2B"
-DEFAULT_OUTPUT_DIR = "outputs/qwen3_5_2b-comment-filtering"
+DEFAULT_MODEL = "Qwen/Qwen3-1.7B"
+DEFAULT_OUTPUT_DIR = "outputs/qwen3-1.7b-comment-filtering"
 
 
 def parse_args() -> argparse.Namespace:
@@ -94,7 +94,7 @@ def run_training(args: argparse.Namespace) -> None:
     import torch
     from datasets import load_dataset
     from peft import LoraConfig
-    from transformers import AutoModelForImageTextToText, AutoProcessor
+    from transformers import AutoModelForCausalLM, AutoTokenizer
     from trl import SFTConfig, SFTTrainer
 
     train_dataset = load_dataset("json", data_files=str(args.train_jsonl), split="train")
@@ -104,10 +104,10 @@ def run_training(args: argparse.Namespace) -> None:
         else None
     )
 
-    processor = AutoProcessor.from_pretrained(args.model_name)
-    model = AutoModelForImageTextToText.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
-        dtype=torch.bfloat16,
+        torch_dtype=torch.bfloat16,
         device_map="auto",
         attn_implementation="sdpa",
     )
@@ -142,11 +142,10 @@ def run_training(args: argparse.Namespace) -> None:
         "args": training_args,
         "train_dataset": train_dataset,
         "peft_config": peft_config,
+        "processing_class": tokenizer,
     }
     if eval_dataset is not None:
         trainer_kwargs["eval_dataset"] = eval_dataset
-    if processor is not None:
-        trainer_kwargs["processing_class"] = processor
 
     trainer = SFTTrainer(**trainer_kwargs)
     trainer.train()

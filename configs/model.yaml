@@ -1,16 +1,16 @@
 model:
-  primary_checkpoint: Qwen/Qwen3.5-2B
-  base_reference: Qwen/Qwen3.5-2B-Base
-  parameter_count_billions: 2.274
+  primary_checkpoint: Qwen/Qwen3-1.7B
+  base_reference: Qwen/Qwen3-1.7B
+  parameter_count_billions: 1.7
   license: apache-2.0
-  task_tag: image-text-to-text
+  task_tag: text-generation
   train_from_quantized_checkpoint: false
 
 training:
   method: lora_sft
-  max_length: 768
-  output_dir: outputs/qwen3_5_2b-comment-filtering
-  hub_model_id: changeme/qwen3.5-2b-comment-filtering
+  max_length: 512
+  output_dir: outputs/qwen3-1.7b-comment-filtering
+  hub_model_id: changeme/qwen3-1.7b-comment-filtering
   report_to:
     - trackio
 

@@ -10,7 +10,7 @@
 #   "trl>=0.25.0",
 # ]
 # ///
-"""Self-contained HF Jobs LoRA SFT training script for Qwen3.5 moderation."""
+"""Self-contained HF Jobs LoRA SFT training script for Qwen3 moderation."""
 
 from __future__ import annotations
 
@@ -20,12 +20,12 @@ import json
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--model-name", default="Qwen/Qwen3.5-2B")
+    parser.add_argument("--model-name", default="Qwen/Qwen3-1.7B")
     parser.add_argument("--dataset-name", default="zackyalgiffari/comment-filtering-demo-dataset")
     parser.add_argument("--train-split", default="train")
     parser.add_argument("--eval-split", default="eval")
-    parser.add_argument("--output-dir", default="qwen3_5_2b_comment_filtering_demo")
-    parser.add_argument("--hub-model-id", default="zackyalgiffari/comment-filtering-qwen3.5-2b")
+    parser.add_argument("--output-dir", default="qwen3_1_7b_comment_filtering_demo")
+    parser.add_argument("--hub-model-id", default="zackyalgiffari/comment-filtering-qwen3-1.7b")
     parser.add_argument("--max-length", type=int, default=768)
     parser.add_argument("--num-train-epochs", type=float, default=2.0)
     parser.add_argument("--learning-rate", type=float, default=2e-4)
@@ -35,7 +35,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--lora-alpha", type=int, default=64)
     parser.add_argument("--lora-dropout", type=float, default=0.05)
     parser.add_argument("--trackio-project", default="comment-filtering")
-    parser.add_argument("--run-name", default="qwen3.5-2b-demo-sft")
+    parser.add_argument("--run-name", default="qwen3-1.7b-demo-sft")
     parser.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
@@ -56,7 +56,7 @@ def run_training(args: argparse.Namespace) -> None:
     import trackio
     from datasets import load_dataset
     from peft import LoraConfig
-    from transformers import AutoModelForImageTextToText, AutoProcessor
+    from transformers import AutoModelForCausalLM, AutoTokenizer
     from trl import SFTConfig, SFTTrainer
 
     trackio.init(project=args.trackio_project, name=args.run_name)
@@ -64,10 +64,10 @@ def run_training(args: argparse.Namespace) -> None:
     train_dataset = load_dataset(args.dataset_name, split=args.train_split)
     eval_dataset = load_dataset(args.dataset_name, split=args.eval_split)
 
-    processor = AutoProcessor.from_pretrained(args.model_name)
-    model = AutoModelForImageTextToText.from_pretrained(
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name)
+    model = AutoModelForCausalLM.from_pretrained(
         args.model_name,
-        dtype=torch.bfloat16,
+        torch_dtype=torch.bfloat16,
         device_map="auto",
         attn_implementation="sdpa",
     )
@@ -105,7 +105,7 @@ def run_training(args: argparse.Namespace) -> None:
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         peft_config=peft_config,
-        processing_class=processor,
+        processing_class=tokenizer,
     )
     trainer.train()
     trainer.push_to_hub()

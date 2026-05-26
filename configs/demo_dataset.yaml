@@ -16,20 +16,20 @@ demo_dataset:
     review_required: true
     input_dir: artifacts/synthetic_batches
   sources:
-    - id: bootstrap_sample
-      kind: local_jsonl
-      path: data/bootstrap_sample.jsonl
-      license: project-sample
-      enabled_by_default: true
     - id: nahiar_hate_speech_detection
       kind: hf_dataset
       repo_id: nahiar/hate_speech_detection
       license: mit
       language: id
-      enabled_by_default: false
+      enabled_by_default: true
     - id: haipradana_indonesian_twitter_hate_speech_cleaned
       kind: hf_dataset
       repo_id: haipradana/indonesian-twitter-hate-speech-cleaned
       license: apache-2.0
       language: id
+      enabled_by_default: true
+    - id: bootstrap_sample
+      kind: local_jsonl
+      path: data/bootstrap_sample.jsonl
+      license: project-sample
       enabled_by_default: false

@@ -1,11 +1,11 @@
 demo_training:
-  model_name: Qwen/Qwen3.5-2B
-  hub_model_id: zackyalgiffari/comment-filtering-qwen3.5-2b
+  model_name: Qwen/Qwen3-1.7B
+  hub_model_id: zackyalgiffari/comment-filtering-qwen3-1.7b
   dataset_name: zackyalgiffari/comment-filtering-demo-dataset
   train_split: train
   eval_split: eval
-  output_dir: qwen3_5_2b_comment_filtering_demo
-  max_length: 768
+  output_dir: qwen3_1_7b_comment_filtering_demo
+  max_length: 512
   num_train_epochs: 2
   learning_rate: 0.0002
   per_device_train_batch_size: 1
@@ -15,7 +15,7 @@ demo_training:
   lora_dropout: 0.05
   report_to: trackio
   trackio_project: comment-filtering
-  run_name: qwen3.5-2b-demo-sft
+  run_name: qwen3-1.7b-demo-sft
   hf_jobs:
     flavor: a10g-large
     timeout: 2h
