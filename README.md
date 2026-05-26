@@ -62,3 +62,11 @@ PYTHONPATH=src python3 scripts/train_lora_sft.py \
   --train-jsonl outputs/bootstrap_sft.jsonl \
   --dry-run
 ```
+
+## Offline Evaluation
+
+```bash
+PYTHONPATH=src python3 scripts/evaluate_predictions.py \
+  --gold-jsonl data/bootstrap_sample.jsonl \
+  --predictions-jsonl data/bootstrap_predictions_sample.jsonl
+```

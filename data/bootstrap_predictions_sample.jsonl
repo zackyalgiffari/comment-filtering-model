@@ -1,0 +1,6 @@
+{"comment_id":"sample-001","prediction":{"flagged":false,"labels":["safe"],"severity":"low","confidence":0.98,"action":"shadow_log"}}
+{"comment_id":"sample-002","prediction":{"flagged":true,"labels":["hate_or_harassment"],"severity":"low","confidence":0.74,"action":"shadow_log"}}
+{"comment_id":"sample-003","prediction":{"flagged":true,"labels":["spam_or_scam"],"severity":"medium","confidence":0.89,"action":"shadow_log"}}
+{"comment_id":"sample-004","prediction":{"flagged":true,"labels":["profanity"],"severity":"low","confidence":0.78,"action":"shadow_log"}}
+{"comment_id":"sample-005","prediction":{"flagged":true,"labels":["violence_or_threat"],"severity":"high","confidence":0.93,"action":"shadow_log"}}
+{"comment_id":"sample-006","prediction":{"flagged":true,"labels":["self_harm"],"severity":"high","confidence":0.91,"action":"shadow_log"}}
