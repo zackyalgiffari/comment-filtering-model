@@ -87,6 +87,24 @@ PYTHONPATH=src python3 scripts/smoke_vllm.py \
   --model your-org/qwen3.5-2b-comment-filtering
 ```
 
+## Demo Dataset And HF Jobs
+
+Build ignored local artifacts from enabled demo sources:
+
+```bash
+PYTHONPATH=src python3 scripts/build_demo_dataset.py
+PYTHONPATH=src python3 scripts/split_dataset.py \
+  outputs/datasets/demo_v1/raw.jsonl outputs/datasets/demo_v1/splits
+PYTHONPATH=src python3 scripts/prepare_hf_dataset_upload.py outputs/datasets/demo_v1/splits
+```
+
+Print the self-contained HF Jobs payload without submitting a paid job:
+
+```bash
+PYTHONPATH=src python3 scripts/print_hf_job_payload.py --dry-run
+python3 scripts/hf_jobs_train_sft.py --dry-run
+```
+
 ## Docs
 
 - Training: `docs/training_runbook.md`
@@ -95,3 +113,5 @@ PYTHONPATH=src python3 scripts/smoke_vllm.py \
 - Thresholding: `docs/thresholding.md`
 - Rollout: `docs/rollout_checklist.md`
 - Model card draft: `docs/model_card_draft.md`
+- Synthetic data: `docs/synthetic_generation.md`
+- HF Jobs launch: `docs/hf_jobs_launch_checklist.md`
