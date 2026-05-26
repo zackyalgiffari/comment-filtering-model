@@ -1,0 +1,22 @@
+model:
+  primary_checkpoint: Qwen/Qwen3.5-2B
+  base_reference: Qwen/Qwen3.5-2B-Base
+  parameter_count_billions: 2.274
+  license: apache-2.0
+  task_tag: image-text-to-text
+  train_from_quantized_checkpoint: false
+
+training:
+  method: lora_sft
+  max_length: 768
+  output_dir: outputs/qwen3_5_2b-comment-filtering
+  hub_model_id: changeme/qwen3.5-2b-comment-filtering
+  report_to:
+    - trackio
+
+serving:
+  engine: vllm
+  max_new_tokens: 96
+  temperature: 0.0
+  target_p95_latency_ms: 200
+  mode: shadow_log

@@ -1,0 +1,17 @@
+taxonomy:
+  labels:
+    - safe
+    - hate_or_harassment
+    - sexual
+    - violence_or_threat
+    - spam_or_scam
+    - profanity
+    - self_harm
+  severities:
+    - low
+    - medium
+    - high
+  actions:
+    - shadow_log
+  default_action: shadow_log
+  enforcement_mode: shadow
