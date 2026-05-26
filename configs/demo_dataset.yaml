@@ -1,0 +1,35 @@
+demo_dataset:
+  version: demo_v1
+  output_dir: outputs/datasets/demo_v1
+  seed: 42
+  split:
+    train: 0.8
+    eval: 0.1
+    test: 0.1
+  target_rows:
+    min: 2000
+    max: 5000
+  storage_policy:
+    commit_raw_toxic_data: false
+    commit_sanitized_samples_only: true
+  synthetic:
+    review_required: true
+    input_dir: artifacts/synthetic_batches
+  sources:
+    - id: bootstrap_sample
+      kind: local_jsonl
+      path: data/bootstrap_sample.jsonl
+      license: project-sample
+      enabled_by_default: true
+    - id: nahiar_hate_speech_detection
+      kind: hf_dataset
+      repo_id: nahiar/hate_speech_detection
+      license: mit
+      language: id
+      enabled_by_default: false
+    - id: haipradana_indonesian_twitter_hate_speech_cleaned
+      kind: hf_dataset
+      repo_id: haipradana/indonesian-twitter-hate-speech-cleaned
+      license: apache-2.0
+      language: id
+      enabled_by_default: false
