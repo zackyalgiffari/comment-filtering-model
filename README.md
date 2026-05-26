@@ -46,3 +46,19 @@ pytest
 
 Training and serving scripts are designed to be reproducible, but the initial repo
 implementation does not launch a paid Hugging Face GPU job by default.
+
+## Dataset Preparation
+
+```bash
+PYTHONPATH=src python3 scripts/validate_dataset.py data/bootstrap_sample.jsonl
+PYTHONPATH=src python3 scripts/prepare_sft_dataset.py \
+  data/bootstrap_sample.jsonl outputs/bootstrap_sft.jsonl
+```
+
+## Training Dry Run
+
+```bash
+PYTHONPATH=src python3 scripts/train_lora_sft.py \
+  --train-jsonl outputs/bootstrap_sft.jsonl \
+  --dry-run
+```
