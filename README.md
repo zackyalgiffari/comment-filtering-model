@@ -86,3 +86,12 @@ PYTHONPATH=src python3 scripts/smoke_vllm.py \
   --base-url http://localhost:8000/v1 \
   --model your-org/qwen3.5-2b-comment-filtering
 ```
+
+## Docs
+
+- Training: `docs/training_runbook.md`
+- Deployment: `docs/deployment_runbook.md`
+- API contract: `docs/api_contract.md`
+- Thresholding: `docs/thresholding.md`
+- Rollout: `docs/rollout_checklist.md`
+- Model card draft: `docs/model_card_draft.md`

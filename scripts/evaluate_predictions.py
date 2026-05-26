@@ -25,12 +25,10 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> None:
     args = parse_args()
-    gold = {
-        validate_record(record, line_number=line_number).comment_id: validate_record(
-            record, line_number=line_number
-        )
-        for line_number, record in iter_jsonl(args.gold_jsonl)
-    }
+    gold = {}
+    for line_number, record in iter_jsonl(args.gold_jsonl):
+        validated = validate_record(record, line_number=line_number)
+        gold[validated.comment_id] = validated
     predictions = load_prediction_records(args.predictions_jsonl)
     report = evaluate_predictions(gold, predictions)
     print(json.dumps(report, indent=2, sort_keys=True))
