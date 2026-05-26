@@ -7,10 +7,13 @@ import os
 import re
 
 import gradio as gr
+import spaces
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-HUB_REPO = os.getenv("HUB_REPO", "zackyalgiffari/comment-filtering-qwen3-1.7b")
+DEFAULT_HUB_REPO = "Qwen/Qwen3-1.7B"
+HUB_REPO = os.getenv("HUB_REPO", DEFAULT_HUB_REPO)
+USING_BASE_MODEL = HUB_REPO == DEFAULT_HUB_REPO
 
 SYSTEM_PROMPT = (
     "You are a live-stream chat moderation model for an OTT platform. "
@@ -39,7 +42,7 @@ def load_model() -> None:
     tokenizer = AutoTokenizer.from_pretrained(HUB_REPO)
     model = AutoModelForCausalLM.from_pretrained(
         HUB_REPO,
-        load_in_4bit=True,
+        torch_dtype=torch.bfloat16,
         device_map="auto",
     )
     model.eval()
@@ -49,6 +52,7 @@ def strip_think_tags(text: str) -> str:
     return re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
 
 
+@spaces.GPU(duration=60)
 def moderate(comment: str, language: str) -> tuple[str, dict]:
     if not comment.strip():
         return "Please enter a comment.", {}
@@ -113,6 +117,13 @@ with gr.Blocks(title="Comment Filtering Demo", theme=gr.themes.Soft()) as demo:
         Enter a comment to get a structured moderation decision.
         """
     )
+    if USING_BASE_MODEL:
+        gr.Markdown(
+            "> ⚠️ **Placeholder mode** — currently serving the base "
+            "`Qwen/Qwen3-1.7B` (not yet fine-tuned). Outputs may not strictly follow "
+            "the moderation JSON schema. Set the `HUB_REPO` env var in Space settings "
+            "to load the fine-tuned weights once they are published."
+        )
 
     with gr.Row():
         with gr.Column(scale=2):
