@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import random
 import re
 from collections import Counter
 from dataclasses import dataclass
@@ -14,7 +15,7 @@ from comment_filtering.dataset import ModerationRecord, iter_jsonl, validate_rec
 from comment_filtering.taxonomy import ModerationDecision
 
 
-PERMISSIVE_LICENSES = {"apache-2.0", "mit", "project-sample"}
+PERMISSIVE_LICENSES = {"apache-2.0", "mit", "project-sample", "synthetic-reviewed"}
 
 
 @dataclass(frozen=True)
@@ -98,6 +99,64 @@ def write_jsonl(path: Path, rows: Iterable[dict[str, Any]]) -> int:
             handle.write(json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n")
             count += 1
     return count
+
+
+def read_moderation_rows(path: Path) -> list[DemoDatasetRow]:
+    rows = []
+    for line_number, record in iter_jsonl(path):
+        source_id = record.get("source", "unknown")
+        source_license = record.get("source_license", "unknown")
+        if not isinstance(source_id, str) or not source_id:
+            raise ValueError(f"{path}:{line_number}: source must be a string")
+        if not isinstance(source_license, str) or not source_license:
+            raise ValueError(f"{path}:{line_number}: source_license must be a string")
+        rows.append(
+            DemoDatasetRow(
+                validate_record(record, line_number=line_number),
+                source_id,
+                source_license,
+            )
+        )
+    if not rows:
+        raise ValueError(f"{path}: no moderation rows found")
+    return rows
+
+
+def split_rows(
+    rows: list[DemoDatasetRow],
+    *,
+    seed: int,
+    train_ratio: float,
+    eval_ratio: float,
+    test_ratio: float,
+) -> dict[str, list[DemoDatasetRow]]:
+    total_ratio = train_ratio + eval_ratio + test_ratio
+    if round(total_ratio, 6) != 1.0:
+        raise ValueError("Split ratios must sum to 1.0")
+    shuffled = sorted(rows, key=lambda row: row.record.comment_id)
+    random.Random(seed).shuffle(shuffled)
+
+    train_count = round(len(shuffled) * train_ratio)
+    eval_count = round(len(shuffled) * eval_ratio)
+    test_count = len(shuffled) - train_count - eval_count
+    if len(shuffled) >= 3:
+        counts = {"train": train_count, "eval": eval_count, "test": test_count}
+        for split_name in ("eval", "test", "train"):
+            if counts[split_name] == 0:
+                donor = max(counts, key=counts.get)
+                if counts[donor] > 1:
+                    counts[donor] -= 1
+                    counts[split_name] += 1
+        train_count = counts["train"]
+        eval_count = counts["eval"]
+
+    train_end = train_count
+    eval_end = train_end + eval_count
+    return {
+        "train": shuffled[:train_end],
+        "eval": shuffled[train_end:eval_end],
+        "test": shuffled[eval_end:],
+    }
 
 
 def build_manifest(
