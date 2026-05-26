@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Synthetic moderation batch row",
+  "type": "object",
+  "required": ["synthetic_id", "text", "language", "decision", "review"],
+  "additionalProperties": false,
+  "properties": {
+    "synthetic_id": {"type": "string", "minLength": 1},
+    "text": {"type": "string", "minLength": 1},
+    "language": {"type": "string", "enum": ["id", "en", "mixed"]},
+    "decision": {
+      "type": "object",
+      "required": ["flagged", "labels", "severity", "confidence", "action"],
+      "additionalProperties": false,
+      "properties": {
+        "flagged": {"type": "boolean"},
+        "labels": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "safe",
+              "hate_or_harassment",
+              "sexual",
+              "violence_or_threat",
+              "spam_or_scam",
+              "profanity",
+              "self_harm"
+            ]
+          }
+        },
+        "severity": {"type": "string", "enum": ["low", "medium", "high"]},
+        "confidence": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "action": {"type": "string", "enum": ["shadow_log"]}
+      }
+    },
+    "review": {
+      "type": "object",
+      "required": ["reviewed", "reviewer", "notes"],
+      "additionalProperties": false,
+      "properties": {
+        "reviewed": {"type": "boolean"},
+        "reviewer": {"type": "string"},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}
